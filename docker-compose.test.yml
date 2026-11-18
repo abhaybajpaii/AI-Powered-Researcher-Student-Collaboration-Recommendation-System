@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  db_test:
+    image: pgvector/pgvector:pg16
+    container_name: stu_postgres_test
+    restart: "no"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-collab_test_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-collab_test_secure_vault_9821!}
+      POSTGRES_DB: ${POSTGRES_DB:-collab_matcher_test}
+    ports:
+      - "${POSTGRES_PORT:-5435}:5432"
+    volumes:
+      - stu_pgdata_test:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-collab_test_user} -d ${POSTGRES_DB:-collab_matcher_test}"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+      start_period: 3s
+    networks:
+      - collab_test_network
+
+volumes:
+  stu_pgdata_test:
+    name: stu_pgdata_test
+    driver: local
+
+networks:
+  collab_test_network:
+    name: collab_test_network
+    driver: bridge
+
